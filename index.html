@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1c0e18">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'%3E%3Cpath d='M50 85 C 15 62 0 38 0 20 C 0 4 14 -2 26 4 C 38 10 46 22 50 30 C 54 22 62 10 74 4 C 86 -2 100 4 100 20 C 100 38 85 62 50 85 Z' fill='%23cf9d4e'/%3E%3C/svg%3E">
+<title>For Aliyah</title>
+<style>
+  :root{
+    --plum-black:#1c0e18;
+    --wine:#4a0f2c;
+    --rose-gold:#e3a9a1;
+    --blush:#f6dcd6;
+    --gold:#cf9d4e;
+    --cream:#faf1e8;
+    --shadow:#0d0610;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+
+  button{ touch-action:manipulation; }
+
+  @font-face{
+    font-family:'system-serif';
+    src:local('Georgia');
+  }
+
+  html,body{
+    height:100%;
+    background:var(--plum-black);
+    overflow:hidden;
+    font-family:'Jost','Trebuchet MS',sans-serif;
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 20% 20%, rgba(207,157,78,0.08), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(227,169,161,0.10), transparent 45%),
+      linear-gradient(180deg, #1c0e18 0%, #2c1122 60%, #1c0e18 100%);
+    color:var(--cream);
+    position:relative;
+  }
+
+  .display{
+    font-family:'Playfair Display','Georgia',serif;
+  }
+
+  /* ---------- STAGE WRAPPER ---------- */
+  .stage{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:safe center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    padding:24px;
+    padding-top:max(24px, env(safe-area-inset-top));
+    padding-bottom:max(24px, env(safe-area-inset-bottom));
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 1.1s ease;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .stage.active{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  /* ---------- FLOATING AMBIENT HEARTS ---------- */
+  .ambient-heart{
+    position:fixed;
+    bottom:-10%;
+    font-size:18px;
+    color:var(--rose-gold);
+    opacity:0.35;
+    pointer-events:none;
+    animation:floatUp linear infinite;
+    z-index:0;
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:0.5;}
+    100%{ transform:translateY(-115vh) translateX(var(--drift,20px)) rotate(25deg); opacity:0;}
+  }
+
+  /* ---------- PHASE 1: HEART BLOOM ---------- */
+  #phase-bloom .bloom-wrap{
+    position:relative;
+    width:260px;
+    height:260px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .petal-heart{
+    position:absolute;
+    width:70px;
+    height:70px;
+    opacity:0;
+    transform:scale(0.2);
+    transition:opacity 1s ease, transform 1s cubic-bezier(.2,.9,.3,1.3);
+  }
+  .petal-heart svg{ width:100%; height:100%; }
+
+  .core-heart{
+    position:absolute;
+    width:64px;
+    height:64px;
+    opacity:0;
+    transform:scale(0.3);
+    transition:opacity 1s ease, transform 1s cubic-bezier(.2,.9,.3,1.4);
+    filter:drop-shadow(0 0 18px rgba(207,157,78,0.55));
+  }
+
+  .bloom-caption{
+    margin-top:38px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--rose-gold);
+    opacity:0;
+    transition:opacity 0.8s ease;
+    min-height:16px;
+  }
+
+  /* ---------- PHASE 2: LETTER ---------- */
+  #phase-letter{
+    max-width:640px;
+  }
+
+  .frame{
+    width:220px;
+    height:220px;
+    margin:0 auto 34px;
+    position:relative;
+  }
+  .frame .heart-mask{
+    width:100%;
+    height:100%;
+    clip-path: path('M66 122 C 12 86 4 52 22 30 C 38 10 62 12 66 34 C 70 12 94 10 110 30 C 128 52 120 86 66 122 Z');
+    -webkit-clip-path: path('M66 122 C 12 86 4 52 22 30 C 38 10 62 12 66 34 C 70 12 94 10 110 30 C 128 52 120 86 66 122 Z');
+    overflow:hidden;
+    box-shadow:0 0 0 3px var(--gold), 0 10px 30px rgba(0,0,0,0.5);
+    background:#111;
+  }
+  .frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:0.35em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:14px;
+  }
+
+  .letter-title{
+    font-size:clamp(28px, 5vw, 42px);
+    color:var(--cream);
+    margin-bottom:22px;
+    line-height:1.15;
+  }
+  .letter-title .name-letter{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(14px);
+    transition:opacity 0.6s ease, transform 0.6s ease;
+  }
+  .letter-title .name-letter.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  .days-counter{
+    font-size:12px;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--gold);
+    opacity:0;
+    margin-bottom:20px;
+    transition:opacity 1s ease;
+  }
+  .days-counter.show{ opacity:0.85; }
+  .days-counter .num{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:15px;
+  }
+
+  .fade-in-btn{
+    opacity:0;
+    transform:translateY(8px);
+    pointer-events:none;
+    transition:opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-in-btn.show{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  .sound-toggle{
+    position:fixed;
+    top:18px;
+    left:18px;
+    z-index:60;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:1px solid rgba(246,220,214,0.3);
+    background:rgba(28,14,24,0.5);
+    color:var(--blush);
+    font-size:15px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .letter-body{
+    font-size:16px;
+    line-height:1.85;
+    color:var(--blush);
+    font-weight:300;
+    max-width:520px;
+    margin:0 auto 30px;
+  }
+
+  .letter-body .accent-word{
+    color:var(--gold);
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+  }
+
+  .signature{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--rose-gold);
+    margin-bottom:34px;
+  }
+
+  .btn{
+    border:1px solid var(--gold);
+    background:transparent;
+    color:var(--gold);
+    padding:13px 34px;
+    font-size:13px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background 0.35s ease, color 0.35s ease, transform 0.2s ease;
+  }
+  .btn:hover{
+    background:var(--gold);
+    color:var(--plum-black);
+    transform:translateY(-2px);
+  }
+
+  /* ---------- PHASE 3: QUESTION ---------- */
+  #phase-ask .ask-title{
+    font-size:clamp(30px, 6vw, 52px);
+    line-height:1.2;
+    margin-bottom:10px;
+  }
+  #phase-ask .ask-sub{
+    color:var(--rose-gold);
+    font-size:14px;
+    letter-spacing:0.08em;
+    margin-bottom:52px;
+  }
+
+  .choice-area{
+    position:relative;
+    width:min(520px, 92vw);
+    height:150px;
+  }
+
+  .btn-yes, .btn-no{
+    position:absolute;
+    top:50%;
+    padding:17px 46px;
+    font-size:15px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    border-radius:999px;
+    cursor:pointer;
+    border:none;
+    transition:transform 0.18s ease, box-shadow 0.3s ease, left 0.28s cubic-bezier(.2,.9,.3,1), top 0.28s cubic-bezier(.2,.9,.3,1);
+  }
+
+  .btn-yes{
+    left:calc(50% - 150px);
+    transform:translateY(-50%);
+    background:linear-gradient(135deg, var(--gold), #a97633);
+    color:#241009;
+    font-weight:600;
+    box-shadow:0 8px 26px rgba(207,157,78,0.35);
+    z-index:3;
+  }
+  .btn-yes:hover{
+    transform:translateY(-53%) scale(1.05);
+    box-shadow:0 12px 34px rgba(207,157,78,0.5);
+  }
+
+  .btn-no{
+    left:calc(50% + 40px);
+    transform:translateY(-50%);
+    background:transparent;
+    color:var(--blush);
+    border:1px solid rgba(246,220,214,0.4);
+    z-index:2;
+  }
+
+  .yes-scale{
+    animation:pulseYes 1.6s ease-in-out infinite;
+  }
+  @keyframes pulseYes{
+    0%,100%{ box-shadow:0 8px 26px rgba(207,157,78,0.35);}
+    50%{ box-shadow:0 8px 40px rgba(207,157,78,0.65);}
+  }
+
+  .hint{
+    margin-top:36px;
+    font-size:12px;
+    color:rgba(246,220,214,0.55);
+    min-height:16px;
+    transition:opacity 0.3s ease;
+  }
+
+  /* ---------- PHASE 4: CELEBRATION ---------- */
+  #phase-yes .celebrate-heart{
+    width:100px;
+    margin-bottom:20px;
+    filter:drop-shadow(0 0 24px rgba(207,157,78,0.6));
+  }
+  #phase-yes .celebrate-title{
+    font-size:clamp(34px, 7vw, 58px);
+    margin-bottom:14px;
+  }
+  #phase-yes .celebrate-sub{
+    color:var(--rose-gold);
+    font-size:15px;
+    max-width:420px;
+    line-height:1.7;
+  }
+
+  .confetti-heart{
+    position:fixed;
+    top:-8%;
+    font-size:20px;
+    color:var(--gold);
+    opacity:0.9;
+    pointer-events:none;
+    animation:fall linear forwards;
+    z-index:50;
+  }
+  @keyframes fall{
+    to{ transform:translateY(120vh) rotate(360deg); opacity:0.2; }
+  }
+
+  /* ---------- PHASE 5: I LOVE YOU ---------- */
+  #phase-yes .continue-btn{
+    margin-top:34px;
+  }
+
+  #phase-loveyou .loveyou-word{
+    font-size:clamp(46px, 9vw, 84px);
+    color:var(--gold);
+    margin-bottom:8px;
+    line-height:1.1;
+  }
+  #phase-loveyou .loveyou-name{
+    font-size:15px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--rose-gold);
+    margin-bottom:44px;
+  }
+  .btn-loveback{
+    border:none;
+    background:linear-gradient(135deg, var(--gold), #a97633);
+    color:#241009;
+    font-weight:600;
+    padding:17px 42px;
+    font-size:14px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    border-radius:999px;
+    cursor:pointer;
+    box-shadow:0 8px 26px rgba(207,157,78,0.35);
+    transition:transform 0.2s ease, box-shadow 0.3s ease;
+    animation:pulseYes 1.6s ease-in-out infinite;
+  }
+  .btn-loveback:hover{
+    transform:scale(1.05);
+    box-shadow:0 12px 34px rgba(207,157,78,0.5);
+  }
+  .btn-loveback:disabled{
+    opacity:0.6;
+    cursor:default;
+    animation:none;
+  }
+  .send-note{
+    margin-top:22px;
+    font-size:12px;
+    color:rgba(246,220,214,0.5);
+    min-height:16px;
+  }
+
+  /* ---------- PHASE 6: SENT ---------- */
+  /* ---------- PHASE 6: SENT / KEEPSAKE CARD ---------- */
+  .keepsake-card{
+    width:min(360px, 84vw);
+    padding:44px 30px;
+    border:1px solid var(--gold);
+    border-radius:18px;
+    background:linear-gradient(160deg, rgba(74,15,44,0.55), rgba(28,14,24,0.85));
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    margin-bottom:26px;
+  }
+  .keepsake-card .kc-heart{
+    width:40px;
+    margin:0 auto 18px;
+    filter:drop-shadow(0 0 12px rgba(207,157,78,0.5));
+  }
+  .keepsake-card .kc-names{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:26px;
+    color:var(--cream);
+    margin-bottom:10px;
+  }
+  .keepsake-card .kc-date{
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:18px;
+  }
+  .keepsake-card .kc-quote{
+    font-size:13px;
+    line-height:1.7;
+    color:var(--blush);
+    font-style:italic;
+  }
+
+  #phase-sent .sent-title{
+    font-size:clamp(30px, 6vw, 48px);
+    margin-bottom:16px;
+  }
+  #phase-sent .sent-sub{
+    color:var(--rose-gold);
+    font-size:14px;
+    max-width:400px;
+    line-height:1.8;
+  }
+
+  .skip-btn{
+    position:fixed;
+    bottom:18px;
+    right:18px;
+    font-size:11px;
+    color:rgba(246,220,214,0.4);
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    z-index:60;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .ambient-heart, .confetti-heart{ animation:none; display:none; }
+    .yes-scale{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="ambient-layer"></div>
+
+<!-- START GATE: a tap here is the user gesture that unlocks audio for the whole page -->
+<div id="startGate" style="position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:#1c0e18;cursor:pointer;">
+  <p style="color:#f6dcd6;font-family:inherit;letter-spacing:0.18em;font-size:14px;text-transform:uppercase;opacity:0.85;">please give it time and read, 
+    tap to begin</p>
+</div>
+
+<button class="skip-btn" id="skipBtn">skip intro</button>
+
+<!-- PHASE 1: HEART BLOOM -->
+<section class="stage active" id="phase-bloom">
+  <div class="bloom-wrap" id="bloomWrap"></div>
+  <div class="bloom-caption" id="bloomCaption"></div>
+</section>
+
+<!-- PHASE 2: LETTER -->
+<section class="stage" id="phase-letter">
+ <div class="frame">
+  <div class="heart-mask"><img src="assets/images/aliyah.jpg" alt="Aliyah"></div>
+  <h1 class="letter-title display" id="nameTitle"></h1>
+  <p class="days-counter" id="daysCounter"></p>
+  <p class="letter-body">
+    Some people walk into your life quietly, and somehow rearrange everything in it.
+    That is what happened to me when I met you. Your smile has a way of showing up
+    in my mind uninvited, in the middle of ordinary moments, and turning them into
+    <span class="accent-word">good</span> ones. I miss you like crazy. I'm thinking 
+    about you every second of the day. I want you, I really do. There is no one 
+    I want by my side for the rest of my life. 
+                        Only you.
+    I love you so much, wish you were here cuddling with me, kissing me 💝💝.
+  </p>
+  <p class="letter-body">
+    I built this little page because words typed into a chat never felt like enough
+    for what I wanted to say. So here it is, in colour, in hearts, in something I made
+    just for you.Believe me, you always give me a million little reasons to smile. I 
+    have never had anyone in my life who is as amazing as you sweet heart ❤️😊.
+  </p>
+  <p class="signature">— with all my heart</p>
+  <button class="btn fade-in-btn" id="toAskBtn">Continue</button>
+ </div>
+</section>
+
+<!-- PHASE 3: THE ASK -->
+<section class="stage" id="phase-ask">
+  <h2 class="ask-title display">Aliyah, will you<br>be my girlfriend?</h2>
+  <p class="ask-sub">Press no. You will see magic.</p>
+  <div class="choice-area" id="choiceArea">
+    <button class="btn-yes yes-scale" id="yesBtn">Yes</button>
+    <button class="btn-no" id="noBtn">No</button>
+  </div>
+  <p class="hint" id="hint"></p>
+</section>
+
+<!-- PHASE 4: CELEBRATION -->
+<section class="stage" id="phase-yes">
+  <svg class="celebrate-heart" viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 85 C 15 62 0 38 0 20 C 0 4 14 -2 26 4 C 38 10 46 22 50 30 C 54 22 62 10 74 4 C 86 -2 100 4 100 20 C 100 38 85 62 50 85 Z" fill="url(#g1)"/>
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="100" y2="90">
+        <stop offset="0%" stop-color="#e3a9a1"/>
+        <stop offset="100%" stop-color="#cf9d4e"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <h2 class="celebrate-title display">She said yes.</h2>
+  <p class="celebrate-sub">Aliyah just made this the best page I've ever built.<br>I promise to make you smile like this on purpose, every day.</p>
+  <button class="btn fade-in-btn continue-btn" id="toLoveYouBtn">Continue</button>
+</section>
+
+<!-- PHASE 5: I LOVE YOU -->
+<section class="stage" id="phase-loveyou">
+  <h2 class="loveyou-word display">I love you</h2>
+  <p class="loveyou-name">Aliyah</p>
+  <button class="btn-loveback" id="loveBackBtn">I love You Too</button>
+  <p class="send-note" id="sendNote"></p>
+</section>
+
+<!-- PHASE 6: SENT -->
+<section class="stage" id="phase-sent">
+  <div class="keepsake-card">
+    <svg class="kc-heart" viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 85 C 15 62 0 38 0 20 C 0 4 14 -2 26 4 C 38 10 46 22 50 30 C 54 22 62 10 74 4 C 86 -2 100 4 100 20 C 100 38 85 62 50 85 Z" fill="url(#g2)"/>
+      <defs>
+        <linearGradient id="g2" x1="0" y1="0" x2="100" y2="90">
+          <stop offset="0%" stop-color="#e3a9a1"/>
+          <stop offset="100%" stop-color="#cf9d4e"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <p class="kc-names">Jay &amp; Aliyah</p>
+    <p class="kc-date" id="kcDate"></p>
+    <p class="kc-quote">"I may not see you everyday but I love you everyday."</p>
+  </div>
+  <h2 class="sent-title display">You said it back.</h2>
+  <p class="sent-sub">Your Presence Means Alot —<br>Thanks for your attention bambi.</p>
+</section>
+
+<script>
+/* ---------------- EASY CONFIG ---------------- */
+/* Set this to the date that matters to you two, e.g. '2024-03-14'.
+   Leave as null to hide the days-counter. */
+const RELATIONSHIP_START_DATE = null; // e.g. '2024-03-14'
+
+/* ---------------- ANIMATED NAME ---------------- */
+const nameTitle = document.getElementById('nameTitle');
+const nameText = 'Aliyah';
+nameText.split('').forEach((ch, i)=>{
+  const span = document.createElement('span');
+  span.className = 'name-letter';
+  span.textContent = ch;
+  nameTitle.appendChild(span);
+});
+function revealName(){
+  const letters = nameTitle.querySelectorAll('.name-letter');
+  letters.forEach((l, i)=>{
+    setTimeout(()=> l.classList.add('show'), 140*i);
+  });
+}
+
+/* ---------------- DAYS-SINCE COUNTER ---------------- */
+const daysCounter = document.getElementById('daysCounter');
+function showDaysCounter(){
+  if(!RELATIONSHIP_START_DATE) return;
+  const start = new Date(RELATIONSHIP_START_DATE);
+  const now = new Date();
+  const diffDays = Math.max(0, Math.floor((now - start) / (1000*60*60*24)));
+  daysCounter.innerHTML = `<span class="num">${diffDays}</span> days of us`;
+  setTimeout(()=> daysCounter.classList.add('show'), 400);
+}
+
+/* ---------------- KEEPSAKE CARD DATE ---------------- */
+const kcDate = document.getElementById('kcDate');
+if(kcDate){
+  kcDate.textContent = new Date().toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+}
+
+/* ---------------- AMBIENT MUSIC (your own audio file, autoplay) ---------------- */
+const MY_SONG_SRC = 'song.mp3';
+const MY_SONG_VOLUME = 0.9; // 0.0 (silent) to 1.0 (full volume)
+
+let audioOn = false;
+const mySound = new Audio(MY_SONG_SRC);
+mySound.loop = true;
+mySound.volume = MY_SONG_VOLUME;
+
+function startAmbientAudio(){
+  mySound.play().then(()=>{
+    audioOn = true;
+  }).catch(()=>{
+    /* If this ever fails, it will simply stay silent — the start gate
+       below is what guarantees this normally succeeds. */
+  });
+}
+
+function stopAmbientAudio(){
+  mySound.pause();
+  mySound.currentTime = 0;
+  audioOn = false;
+}
+
+// The tap on the start gate (see below) is a real user gesture, so it can
+// briefly play + pause the audio element to "unlock" it. After that, the
+// browser will allow our later programmatic .play() call — the one fired
+// the instant the intro ends — to actually produce sound.
+function unlockAudio(){
+  mySound.play().then(()=>{
+    mySound.pause();
+    mySound.currentTime = 0;
+  }).catch(()=>{});
+}
+
+/* ---------------- AMBIENT FLOATING HEARTS ---------------- */
+function spawnAmbient(){
+  const layer = document.getElementById('ambient-layer');
+  const el = document.createElement('div');
+  el.className = 'ambient-heart';
+  el.textContent = Math.random() > 0.5 ? '♥' : '♡';
+  const left = Math.random()*100;
+  const dur = 9 + Math.random()*10;
+  const drift = (Math.random()*80 - 40) + 'px';
+  el.style.left = left+'vw';
+  el.style.setProperty('--drift', drift);
+  el.style.animationDuration = dur+'s';
+  el.style.fontSize = (12 + Math.random()*16)+'px';
+  layer.appendChild(el);
+  setTimeout(()=>el.remove(), dur*1000+500);
+}
+let ambientInterval = setInterval(spawnAmbient, 600);
+
+/* ---------------- PHASE 1: HEART BLOOM SEQUENCE ---------------- */
+const heartPathSmall = 'M35 63 C 8 45 0 27 0 15 C 0 3 10 -1 18 3 C 26 7 32 15 35 21 C 38 15 44 7 52 3 C 60 -1 70 3 70 15 C 70 27 62 45 35 63 Z';
+
+function makePetal(rotateDeg, distance, size, hue){
+  const wrap = document.createElement('div');
+  wrap.className = 'petal-heart';
+  wrap.style.width = size+'px';
+  wrap.style.height = size+'px';
+  const angle = rotateDeg * Math.PI/180;
+  const x = Math.cos(angle)*distance;
+  const y = Math.sin(angle)*distance;
+  wrap.style.left = `calc(50% - ${size/2}px + ${x}px)`;
+  wrap.style.top = `calc(50% - ${size/2}px + ${y}px)`;
+  wrap.innerHTML = `<svg viewBox="0 0 70 63" xmlns="http://www.w3.org/2000/svg">
+      <path d="${heartPathSmall}" fill="${hue}" opacity="0.85"/>
+    </svg>`;
+  return wrap;
+}
+
+const bloomWrap = document.getElementById('bloomWrap');
+const bloomCaption = document.getElementById('bloomCaption');
+
+const petalConfigs = [
+  {angle:0,   dist:70, size:56, hue:'#e3a9a1'},
+  {angle:51,  dist:70, size:56, hue:'#cf9d4e'},
+  {angle:102, dist:70, size:56, hue:'#f6dcd6'},
+  {angle:153, dist:70, size:56, hue:'#e3a9a1'},
+  {angle:204, dist:70, size:56, hue:'#cf9d4e'},
+  {angle:255, dist:70, size:56, hue:'#f6dcd6'},
+  {angle:306, dist:70, size:56, hue:'#e3a9a1'},
+];
+
+petalConfigs.forEach(cfg=>{
+  const p = makePetal(cfg.angle, cfg.dist, cfg.size, cfg.hue);
+  bloomWrap.appendChild(p);
+});
+
+const core = document.createElement('div');
+core.className = 'core-heart';
+core.innerHTML = `<svg viewBox="0 0 70 63" xmlns="http://www.w3.org/2000/svg">
+    <path d="${heartPathSmall}" fill="#cf9d4e"/>
+  </svg>`;
+core.style.left = 'calc(50% - 32px)';
+core.style.top = 'calc(50% - 32px)';
+bloomWrap.appendChild(core);
+
+const petals = Array.from(document.querySelectorAll('.petal-heart'));
+const captions = ["gathering the pieces...", "one for every reason I love you...", "almost there, Aliyah..."];
+
+function runBloomSequence(){
+  petals.forEach((p, i)=>{
+    setTimeout(()=>{
+      p.style.opacity = '1';
+      p.style.transform = 'scale(1)';
+    }, 260*i);
+  });
+
+  captions.forEach((text, i)=>{
+    setTimeout(()=>{
+      bloomCaption.style.opacity = '0';
+      setTimeout(()=>{
+        bloomCaption.textContent = text;
+        bloomCaption.style.opacity = '1';
+      }, 250);
+    }, 500 + i*950);
+  });
+
+  setTimeout(()=>{
+    core.style.opacity = '1';
+    core.style.transform = 'scale(1.15)';
+  }, 260*petals.length + 500);
+
+  setTimeout(()=>{
+    goToStage('phase-letter');
+    startAmbientAudio();
+    revealName();
+    showDaysCounter();
+    setTimeout(()=>{
+      document.getElementById('toAskBtn').classList.add('show');
+    }, 3600);
+  }, 260*petals.length + 2600);
+}
+
+const startGate = document.getElementById('startGate');
+startGate.addEventListener('click', ()=>{
+  unlockAudio();
+  startGate.style.transition = 'opacity 0.4s ease';
+  startGate.style.opacity = '0';
+  setTimeout(()=>{ startGate.remove(); }, 420);
+  runBloomSequence();
+}, { once:true });
+
+/* ---------------- STAGE NAVIGATION ---------------- */
+function goToStage(id){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id !== 'phase-bloom'){
+    const skip = document.getElementById('skipBtn');
+    if(skip) skip.style.display = 'none';
+  }
+}
+
+document.getElementById('skipBtn').addEventListener('click', ()=>{
+  goToStage('phase-letter');
+  startAmbientAudio();
+  revealName();
+  showDaysCounter();
+  document.getElementById('toAskBtn').classList.add('show');
+});
+
+document.getElementById('toAskBtn').addEventListener('click', ()=>{
+  goToStage('phase-ask');
+});
+
+/* ---------------- THE RUNAWAY "NO" BUTTON ---------------- */
+const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
+const choiceArea = document.getElementById('choiceArea');
+const hint = document.getElementById('hint');
+
+const dodgeLines = [
+  "nice try.",
+  "nope, not happening.",
+  "you can't catch this one.",
+  "the 'no' button has resigned.",
+  "try the other button, Aliyah 😌",
+  "it's scared of you now.",
+  "still faster than you.",
+];
+let dodgeIndex = 0;
+let dodgeCount = 0;
+
+function dodgeNoButton(){
+  const areaRect = choiceArea.getBoundingClientRect();
+  const btnW = noBtn.offsetWidth;
+  const btnH = noBtn.offsetHeight;
+  const maxX = Math.max(areaRect.width - btnW, 0);
+  const maxY = Math.max(areaRect.height - btnH, 0);
+  const newX = Math.random()*maxX;
+  const newY = Math.random()*maxY;
+  noBtn.style.left = newX + 'px';
+  noBtn.style.top = newY + 'px';
+  noBtn.style.transform = 'none';
+
+  dodgeCount++;
+  hint.textContent = dodgeLines[dodgeIndex % dodgeLines.length];
+  dodgeIndex++;
+}
+
+noBtn.addEventListener('mouseenter', dodgeNoButton);
+noBtn.addEventListener('click', (e)=>{
+  e.preventDefault();
+  dodgeNoButton();
+});
+noBtn.addEventListener('touchstart', (e)=>{
+  e.preventDefault();
+  dodgeNoButton();
+}, {passive:false});
+
+yesBtn.addEventListener('click', ()=>{
+  goToStage('phase-yes');
+  launchConfetti();
+  clearInterval(ambientInterval);
+  setTimeout(()=>{
+    document.getElementById('toLoveYouBtn').classList.add('show');
+  }, 2400);
+});
+
+document.getElementById('toLoveYouBtn').addEventListener('click', ()=>{
+  goToStage('phase-loveyou');
+});
+
+/* ---------------- SEND HER REPLY BY EMAIL ---------------- */
+const loveBackBtn = document.getElementById('loveBackBtn');
+const sendNote = document.getElementById('sendNote');
+
+loveBackBtn.addEventListener('click', ()=>{
+  stopAmbientAudio();
+
+  loveBackBtn.disabled = true;
+  loveBackBtn.textContent = 'Sending...';
+  sendNote.textContent = 'opening your mail app...';
+
+  const to = 'jayw18239@gmail.com';
+  const subject = "Aliyah's answer 💛";
+  const body =
+    "Aliyah's replies:\n\n" +
+    "Will you be my girlfriend? -> YES\n" +
+    "I love you -> I love you too\n\n" +
+    "(sent from Aliyah)";
+
+  const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailtoLink;
+
+  setTimeout(()=>{
+    goToStage('phase-sent');
+  }, 900);
+});
+
+/* ---------------- CONFETTI HEARTS ON YES ---------------- */
+function launchConfetti(){
+  const total = 46;
+  for(let i=0;i<total;i++){
+    setTimeout(()=>{
+      const h = document.createElement('div');
+      h.className = 'confetti-heart';
+      h.textContent = Math.random() > 0.5 ? '♥' : '✦';
+      h.style.left = (Math.random()*100) + 'vw';
+      h.style.fontSize = (14 + Math.random()*18) + 'px';
+      h.style.animationDuration = (3 + Math.random()*2.5) + 's';
+      h.style.color = Math.random() > 0.5 ? '#cf9d4e' : '#e3a9a1';
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(), 6000);
+    }, i*60);
+  }
+}
+</script>
+
+</body>
+</html>
